@@ -1,0 +1,41 @@
+<b>Devblog - Day #2</b>
+<b>Devblog - Day #2 : Logistics</b>
+
+Okay. This is where it gets a little complicated.
+
+The core of your city may be the factories and production nodes, but you will get nowhere without <b>logistics</b>. Without an efficient logistics network, you will be unable to produce anything significant at a fast pace. As such, I think it's only natural we spend some time talking about the system that will be in place.
+
+The logistic network is essentially nothing more than a set of paths that either directly link an input and output together, or indirectly link them. The following are valid logistics systems:
+- <b>Request</b> systems can be configured on a factory-basis. When a factory needs certain resources (low on steel plates, or coal, or engines), it sends a "request" to the logistics network. This means that the nearest active factory will produce the corresponding item. If <i>that</i> factory does not have the item, it will request it from the nodes behind <i>it</i>. This prevents expensive factories (such as those producing high-end products) from consuming resources nonstop.
+- <b>Continuous</> systems can also be configured on an individual factory-basis. These will continously try to produce the corresponding object whenever the resources become available, and store them for later use. Factories will have limited storage, however. Once storage is full, the factory will stop producing. This is useful for low-level factories (producing widely-used products, such as steel plates or gears or wires) so they will not stall if units are available.
+
+All factories may be "shut down" at any time to prevent further resource or power consumption, allowing the user to decide whether or not they want certain products to be produced. If a system is set to the request mode, the user may individually request products to be made.
+
+
+In addition to the available logistic systems, there are various <b>delivery</b> systems. These are how products are physically sent from one factory to another
+- <b>Chaining</b> is the most basic of delivery system. By placing two nodes adjacent to each other and configuring them so the output of one factory leads to the input of another, the product of the prior will automatically be fed into theinputs of the latter. This allows simple systems that mass produce products (such as chaining a mine to a foundry to a plating factory) to be constructed easily without any complex delivery systems in between.
+- <b>Roads</b> are the cheapest of the "travelling" delivery systems. Constructing roads between factories allow delivery units to traverse them. Roads need not be point-to-point, you can create junctions, overpasses, and stoplights as necessary to create a network that will allow a product from one factory to reach any other factory if neccessary. Note that delivery units appear as physical carts or cars, meaning that you will need efficient road planning to ensure there are no back-ups.
+- <b>Trains</b> (<i>Yes, e-bag. <u>Trains</u></i>) are a much more expensive, but much faster option for transporting items in bulk. Trains have a larger capacity than trucks or other road-based units, and travel much faster from point-to-point. They are also restricted to their tracks (and are the only units allowed to ride on tracks), meaning there will be fewer back-ups. These provide a way of transporting vital resources from one side of the city to the other quickly, and their <b>stations</b> make them one of the only types of delivery mechanisms that can exchange between units (for example, a train can unload into trucks to deliver to a wider area).
+- <b>Conveyors</b> are continous, but expensive, ways of delivering items. A conveyor may be linked between a quarry and foundry in order to allow a continous stream of resources to be created. Conveyors also have advanced distribution options, being able to evenly distribute an item between multiple conveyors, and can pass over all other logistic networks (for example, over a road or train line). Conveyors are the only logistic network that draw continuous power.
+- <b>Copters</b> are the most efficient delivery system, but are the most expensive. They deliver directly from point-to-point, and require no network in order to operate
+
+Note that, in the case of copters and roads, delivery units will need to be given to factories in order to operate properly (for example, a car must be assigned to a factory in order for that factory to send products on the road).
+
+I am still deciding whether or not I want workers to commute to the factory every day, or whether that is informed. On the one hand, it provides an additional logistic challenge to consider, on the other it is more work on my end for more possible frustration on the users end. Thoughts on this feature would be appreciated.
+
+<b>The Coder Section</b>
+<color value="blue">Let's talk about how the logistic network will be managed in the actual code, yeah?
+
+I'm thinking that I will use a managing <i>LogisticSystem</i> class that will manage all the individual methods of transport. This will only be responsible for managing pathfinding and requests, not actually rendering or displaying travel. 
+
+The network will be constructed of individual <b>nodes</b>. Each node represents either an input/output for a factory/resource node, or a junction on the logistic network. Nodes will work as a linked-list with arbitrary links per unit (representing all nodes linked directly to the current node), so that we may traverse it forward or backwards during pathfinding.
+
+For the actual pathfinding, we must first conclude that, in any scenario, items will be delivered IFF there is an existing request from another factory for those items. When a factory is created, it will compute the paths between it and previous factories in its logistic chain; these paths are stored as part of the factory object. The paths are constructed using an A* algorithm weighted on physical distance, traversing nodes on the network (remember that logistic nodes only exist at junctions or IO nodes).  
+
+When the factory requests resources, it will weigh the distance of the path to each potential factory, the congestion on those paths, and whether or not the factory has already produced the resources or will need to produce them, before choosing a factory and sending the production request. This request may propogate down the line using a similar system, until all requests are fulfilled. I have yet to decide if I want a dynamic pathing system (repathing depending on congestion of roads) or static (uses the same, shortest node-to-node path all the time, regardless of congestion). The answer really depends on the efficiency of the algorithms used, and the laginess induced by them. 
+
+
+If a request propogates all the way back to the resource nodes, and the resource nodes are unable to produce (no power, no people, etc.), the request will return a failure which will propogate back forward until all requests are nullified.
+</color>
+<b>That's it for today. Tomorrow will be about factories and people</b>
+
