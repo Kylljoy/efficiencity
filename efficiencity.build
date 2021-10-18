@@ -1,45 +1,67 @@
 ﻿{
-    "id": "efficiencity",
-    "source": "source/",
-    "output": "output/%TARGET_NAME%",
-    "title": "efficiencity",
+	"id": "efficiencity",
+	"title": "EfficienCity",
+	"description": "SimCity, but for the industrious",
     "icons": [
-        "assets/icon32.png",
-        "assets/icon256.png"
-    ],
-    "version": "1.0",
-    "ios-bundle-prefix": "com.yourname.efficiencity,%VERSION%",
-    "guid-seed": "com.yourname.efficiencity,v1,%TARGET_NAME%",
+		"assets/icon32.png",
+		"assets/icon256.png"
+	],
+	
+	"deps": [
+		"%TWOCANS_SDK%/TwoCansAlpha4"
+	],
 
-    "image-sheets": [
-        { "id": "everything", "prefix": "*" }
-    ],
-
-    "targets": [
-        {
-            "name": "android",
-            "platform": "javascript-app-android"
-        },
-        {
-            "name": "ios",
-            "platform": "javascript-app-ios"
-        },
-        {
-            "name": "javascript",
-            "platform": "javascript-app",
-            "js-file-prefix": "/website/relative/path/from/domain/root"
-        },
-        {
-            "name": "csharp",
-            "platform": "csharp-app"
-        },
-        {
-            "name": "java",
-            "platform": "java-app"
-        },
-        {
-            "name": "python",
-            "platform": "python-app"
-        }
-    ]
+	"source": "source",
+	"compilerlocale": "en",
+	"output": "output/%TARGET_NAME%",
+	
+	
+	"image-sheets": [
+		{ "id": "twocans_everything", "prefix": "*" }
+	],
+	
+	"guidseed": "org.Kylljoy.CrayonGames.v1.%TARGET_NAME%",
+	
+	"vars": [
+		{ "name": "screen_width", "value": 600 },
+		{ "name": "screen_height", "value": 600 },
+		{ "name": "use_beta_endpoint", "value": false },
+		{ "name": "game_title", "value": "EfficienCity" },
+		{ "name": "initial_scene", "value": "CityScene" },
+		{ "name": "use_60_fps", "value": true },
+		{ "name": "enable_wasd", "value": true },
+		{ "name": "thumbnail", "value": "assets/logo.png" }
+	
+	],
+	
+	"targets": [
+		{
+			"name": "csharp",
+			"platform": "csharp-app"
+		},
+		{
+			"name": "standalone-web",
+			"platform": "javascript-app"
+		},
+		{
+			"name":"twocans",
+			"platform":"javascript-app"
+		},
+		{
+			"name": "java",
+			"platform": "java-app"
+		},
+		{
+			"name": "python",
+			"platform": "python-app"
+		},
+		{
+			"name": "ios",
+			"platform": "javascript-app-ios"
+		},
+		{
+			"name": "android",
+			"platform": "javascript-app-android"
+		}
+	]
 }

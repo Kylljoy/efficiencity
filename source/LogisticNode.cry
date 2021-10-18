@@ -1,0 +1,143 @@
+import Math;
+
+const MAX_PATHFINDING_ITERATION = 10; //Maximum depth into the logistic network that A* will search
+class LogisticNode {
+    field previousNodes = [];
+    field nextNodes = [];
+    field x;
+    field y;
+
+    static function mergeNodes(nodeA, nodeB) {
+        outputNode = newNode(nodeA.getX(), nodeA.getY());
+        for(prevNode : nodeA.getPreviousNodes()) {
+            outputNode.addPreviousNode(prevNode);
+        }
+
+        for(prevNode : nodeB.getPreviousNodes()) {
+            outputNode.addPreviousNode(prevNode);
+        }
+
+        for(nextNode : nodeA.getNextNodes()) {
+            outputNode.addNextNode(nextNode);
+        }
+
+        for(nextNode : nodeB.getNextNodes()) {
+            outputNode.addNextNode(nextNode);
+        }
+
+        return outputNode;
+    }
+
+    constructor(x, y, previousNodes = []) {
+        this.previousNodes = previousNodes;
+        this.x = x;
+        this.y = y;
+    }
+
+
+    function addPreviousNode(node) {
+        this.previousNodes.add(node);
+    }
+
+    function removePreviousNode(node) {
+        for(i = 0; i < this.previousNodes.length; i++) {
+            if(this.previousNodes[i] == node) {
+                this.previousNodes.remove(i);
+                return;
+            }
+        }
+    }
+
+    function getPreviousNodes() {
+        return this.previousNodes;
+    }
+
+    function addNextNode(node) {
+        this.nextNodes.add(node);
+    }
+
+    function removeNextNode(node) {
+        for(i = 0; i < this.nextNodes.length; i++) {
+            if(this.nextNodes[i] == node) {
+                this.nextNodes.remove(i);
+                return;
+            }
+        }
+    }
+
+    function getNextNodes() {
+        return this.nextNodes;
+    }
+
+    function getX() {
+        return this.x;
+    }
+
+    function getY() {
+        return this.y;
+    }
+
+
+    //A* path generation
+    function generatePathTo(node) {
+        //Get the x and y values of the node
+        nodeX = node.getX();
+        nodeY = node.getY();
+
+        //Generate a frontier based on the next nodes
+        frontier = this.nextNodes.map((q)=>([q]));
+
+        //Sort nodes by distance to target node
+        frontier.sort((node_)=>((((nodeX - node_[0].getX())**2) + ((nodeY - node_[0].getY())**2))**0.5));
+
+        path = [];
+
+        for(iteration = 0; iteration < MAX_PATHFINDING_ITERATION; iteration++) { //While we are under the max iteration
+            currentPath = frontier[0]; //Find the best path in the frontier [index 0 b/c we sorted it]
+            frontier.remove(0); //Remove this path so we don't duplicate it.
+
+            //If the path results in the desired node...
+            if(currentPath[0] == node) {
+                return currentPath[::-1]; //Return the path, we're done here
+            }
+
+            //Otherwise, generate a new list of paths and insert them where they belong.
+            newPaths = currentPath[0].getNextNodes()
+                .map((newNode_)=>
+                ([newNode_] + currentPath));
+            for(newPath : newPaths) {
+                distance = (((nodeX - newPath[0].getX())**2) + ((nodeY - newPath[0].getY())**2))**0.5;
+                //Binary insertion sort
+                low = 0;
+                high = frontier.length;
+                while (true){
+                    mid = (low + high) / 2;
+                    
+                    testNode_ = frontier[mid][0];
+                    testDistance_ = (((nodeX - testNode_.getX())**2) + ((nodeY - testNode_.getY())**2))**0.5;
+                    
+                    if(distance > testDistance_) {
+                        low = mid + 1;
+                    } else if(distance < testDistance_) {
+                        high = mid;
+                    } else if (distance == testDistance_){
+                        frontier.insert(mid, newPath);
+                        break;
+                    }
+
+                    if(low >= high) {
+                        frontier.insert(mid, newPath);
+                        break;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    
+
+    
+
+
+}

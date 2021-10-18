@@ -1,0 +1,50 @@
+
+class Road {
+    field start;
+    field end;
+
+    field cars = [];
+
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    function setStartNode(node) {
+        this.start = node;
+    }
+
+    function setEndNode(node) {
+        this.end = node;
+    }
+
+    function addCar(car) {
+        this.cars.add(car);
+    }
+
+    function removeCar(car) {
+        for(i = 0; i < this.cars.length; i++) {
+            if(this.cars[i] == car) { 
+                this.cars.remove(i);
+                return;
+            }
+        }
+    }
+
+    function getCars() {
+        return this.cars;
+    }
+
+    function getNumberOfCars() {
+        return this.cars.length;
+    }
+
+    function getNumberOfCarsAhead(car) {
+        for(i = 0; i < this.cars.length; i++) {
+            if(this.cars[i] == car) { 
+                return i + 1;
+            }
+        }
+        return this.cars.length;
+    }
+}
