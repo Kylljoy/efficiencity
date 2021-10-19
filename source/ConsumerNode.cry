@@ -1,0 +1,63 @@
+
+
+/*
+A node that consumes resources from the network:
+- Always coupled with a factory or consumer
+- Origin of request for the system
+*/
+
+
+class ConsumerNode : LogisticNode{
+    field resourceId;
+    field availableStock;
+
+    field network; //The LogisticNetwork this node belongs to
+
+    field requestThreshold = 1; //The threshold at which the node will request more resources
+
+    constructor(x, y, resourceId, requestThreshold, network,  previousNodes = []) : base(x, y, previousNodes){
+        this.resourceId = resourceId;
+        this.availableStock = 0;
+        this.network = network;
+        this.requestThreshold = requestThreshold;
+    }
+
+    function setRequestThreshold(threshold) {
+        this.requestThreshold = threshold;
+        if(this.availableStock < threshold) {
+            //Make a logistic request, now that we are below a safe threshold
+            this.network.addRequest(this, this.resourceId, this.requestThreshold);
+        }
+        
+    }
+
+    function getResourceId(){
+        return this.resourceId;
+    }
+
+    function addStock(stock) {
+        this.availableStock += stock;
+    }
+
+    function takeStock(stock) {
+        if(stock > this.availableStock) {
+            this.availableStock -= stock;
+            if(this.availableStock < this.requestThreshold) {
+                //Make a logistic request, now that we are below a safe threshold
+                this.network.addRequest(this, this.resourceId, this.requestThreshold);
+            }
+            return true; //Taking stock was successful
+        }
+        return false; //Insufficeint stock to feed
+    }
+
+    function hasStock(threshold = 1) {
+        return this.availableStock >= threshold;
+    }
+
+    function close() {
+        //Safely close this node by closing any currently existing requests
+        this.network.purgeRequestsFromNode(this);
+    }
+
+}

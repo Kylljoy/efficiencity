@@ -1,0 +1,57 @@
+
+/*
+An abstract class that represents the physical path from one node to another
+Every connection between LogisticNodes is represented as a path
+Whereas nodes are a purely abstract form of linkage and transport, paths are the purely physical form
+Created and modified solely by the LogisticNode class. No instantiation or attribution outside of that code, please
+*/
+
+class LogisticPath {
+    field start;
+    field end;
+
+    field units = [];
+
+    constructor(start, end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    function setStartNode(node) {
+        this.start = node;
+    }
+
+    function setEndNode(node) {
+        this.end = node;
+    }
+
+    function addUnit(unit) {
+        this.units.add(unit);
+    }
+
+    function purgeUnit(unit) {
+        for(i = 0; i < this.units.length; i++) {
+            if(this.units[i] == unit) { 
+                this.units.remove(i);
+                return;
+            }
+        }
+    }
+
+    function getUnits() {
+        return this.units;
+    }
+
+    function getNumberOfUnits() {
+        return this.units.length;
+    }
+
+    function getNumberOfUnitsAheadOf(unit) {
+        for(i = 0; i < this.units.length; i++) {
+            if(this.units[i] == unit) { 
+                return i + 1;
+            }
+        }
+        return this.units.length;
+    }
+}

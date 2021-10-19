@@ -1,0 +1,70 @@
+
+/*
+A node that feeds resources to the network:
+- Always coupled with a factory or generator
+- Capable of answering requests for resources
+
+*/
+class FeederNode : LogisticNode{
+    field resourceId;
+    field availableStock;
+
+    field setProduceMode; //True means this node is always producing
+
+    field capacity = 1; //Total storage capacity for this node;
+    
+    field network; //The LogisticNetwork this node belongs to
+
+    constructor(x, y, resourceId, network, previousNodes = []) : base(x, y, previousNodes) {
+        this.resourceId = resourceId;
+        this.availableStock = 0;
+        
+        this.network = network;
+    }
+
+    function setCapacity(cap) {
+        this.capacity = cap;
+    }
+
+    function getCapacity() {
+        return this.capacity;
+    }
+
+    function getResourceId() {
+        return this.resourceId;
+    }
+
+    function addStock(stock) {
+        this.availableStock += stock;
+    }
+
+    function hasCapacityFor(stock) {
+        if (this.availableStock + stock > this.capacity) {
+            return false;
+        }
+        return true;
+    }
+
+    function takeStock(stock) { //Returns true if stock was successfully removed
+        if (stock > this.availableStock) {
+            return false;
+        }
+        this.availableStock -= stock;
+        return true;
+    }
+
+    function hasStock(threshold = 1) {
+        return this.availableStock >= threshold;
+    }
+
+    //TODO : Write code for delivery units and dispatching, returning, updating
+
+    function canDispatch() {
+        //TODO : Write code for determining if units are available for dispatch
+    }
+
+    function dispatchTo(node, amount) {
+        //TODO : Write code for dispatching units to a consumer
+    }
+
+}

@@ -1,0 +1,19 @@
+/*
+Represents a request on the logistic network
+References the node requesting it, the resource requesting it, and amount requested
+Basically just a struct
+*/
+
+class LogisticRequest {
+    field origin;
+    field resourceId;
+    field amount;
+
+    constructor(origin, resourceId, amount) {
+        this.origin = origin;
+        this.resourceId = resourceId;
+        this.amount = amount;
+
+    }
+    
+}

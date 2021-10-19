@@ -1,6 +1,81 @@
 
+/*
+LogisticNetwork abstract class
+- Coordinates all functions of the network, including requests and pathfinding
+- Acts as masterlist for nodes, paths, and units
+- Manages unit travel
+- Outsources to LogisticNetworkRenderer for rendering
 
+*/
 class LogisticNetwork {
+    field nodes = []; //A list of all managed nodes
+    field paths = []; //A list of all managed paths
+    field resourceMap = {}; //Maps resource types to respective feeding nodes
+
+    field requests = {};
+
+    constructor(progenitorNode) {
+        //Constructs a new logisticNetwork with a singular node
+        this.nodes.add(progenitorNode);
+    }
+
+    //Place a new request in the queue
+    function addRequest(node, resourceId, amount) {
+        //See if the request can be filled with currently available resources
+        feederNodes = this.resourceMap[resourceId];
+
+        for (node_ : feederNodes) {
+            if(node_.hasStock(amount) && node_.canDispatch()) {
+                //There is available stock right now, and the node can dispatch, send it over immediately!
+                node_.dispatchTo(node, amount);
+                return;
+            }
+        }
+
+        //If not, add it to the queue
+        if (this.requests[resourceId] == null){
+            this.requests[resourceId] = [new LogisticRequest(node, resourceId, amount)];
+            return;
+        }
+        this.requests[resourceId].add(new LogisticRequest(node, resourceId, amount));
+    }
+
+    //Notify the network that a node has new available resources for delivery,
+    //or that a node is capable of dispatching again (such as if delivery units have returned)
+    function notifyNewResources(producerNode, resourceId, amount) {
+        amountRemaining = amount;
+        //Check if any requests can be filled by this product
+        if (resourceId == null) {
+            //There are no existing requests for this product
+            return;
+        }
+        for (request_ : this.requests[resourceId]) {
+            if(request_.amount <= amountRemaining && producerNode.canDispatch()) {
+                //There is now stock to deliver to this node, deliver it!
+                producerNode.dispatchTo(request_.node, request_.amount);
+                amountRemaining--;
+            }
+        }
+    }
+
+    //Resolve requests if they can be filled
+    function resolveRequest(request) {
+        for (i = 0; i < this.requests.length; i++) {
+            if (this.requests[i] == request) {
+                this.requests.remove(i);
+            }
+        }
+    }
+
+    //Purge any requests to the system made by a node
+    function purgeRequestsFromNode(node) {
+        for (i = 0; i < this.requests.length; i++) {
+            if (this.requests[i].origin == node) {
+                this.requests.remove(i);
+            }
+        }
+    }
+
 
     
 }
