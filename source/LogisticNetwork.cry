@@ -19,6 +19,34 @@ class LogisticNetwork {
         this.nodes.add(progenitorNode);
     }
 
+    function joinNodes(start, end) {
+        if(!this.nodes.contains(start) && !this.nodes.contains(end)) {
+            return false; //You should make a new logistic network
+        }
+        if(!this.nodes.contains(start)) {
+            this.nodes.add(start);
+        }
+        if(!this.nodes.contains(end)) {
+            this.nodes.add(end);
+        }
+
+        path = start.addNextNode(end);
+        if(path != null) {
+            this.paths.add(path);
+        }
+
+        path = end.addPreviousNode(end);
+        if(path != null) {
+            this.paths.add(path);
+        }
+
+        return true;
+    }
+
+    function mergeNetworks(network, nodeA, nodeB) {
+        
+    }
+
     //Place a new request in the queue
     function addRequest(node, resourceId, amount) {
         //See if the request can be filled with currently available resources

@@ -1,4 +1,4 @@
-
+import Math;
 /*
 A node that feeds resources to the network:
 - Always coupled with a factory or generator
@@ -12,12 +12,17 @@ class FeederNode : LogisticNode{
     field setProduceMode; //True means this node is always producing
 
     field capacity = 1; //Total storage capacity for this node;
+
+    field source; //The factory or producer that feeds this node
     
     field network; //The LogisticNetwork this node belongs to
 
-    constructor(x, y, resourceId, network, previousNodes = []) : base(x, y, previousNodes) {
+    constructor(x, y, resourceId, source, network) : base(x, y, []) { //Since the feeder will always lead into a network, 
+    //there are no previous nodes
         this.resourceId = resourceId;
         this.availableStock = 0;
+
+        this.source = source;
         
         this.network = network;
     }
@@ -35,14 +40,11 @@ class FeederNode : LogisticNode{
     }
 
     function addStock(stock) {
-        this.availableStock += stock;
+        this.availableStock = Math.min(this.availableStock + stock, this.capacity);
     }
 
     function hasCapacityFor(stock) {
-        if (this.availableStock + stock > this.capacity) {
-            return false;
-        }
-        return true;
+        return this.availableStock + stock <= this.capacity;
     }
 
     function takeStock(stock) { //Returns true if stock was successfully removed
@@ -57,8 +59,11 @@ class FeederNode : LogisticNode{
         return this.availableStock >= threshold;
     }
 
-    //TODO : Write code for delivery units and dispatching, returning, updating
+    function placeRequest() {
+        this.source.requestProduction();
+    }
 
+    //TODO : Write code for delivery units and dispatching, returning, updating
     function canDispatch() {
         //TODO : Write code for determining if units are available for dispatch
     }

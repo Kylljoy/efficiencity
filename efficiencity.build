@@ -14,13 +14,13 @@
 	"source": "source",
 	"compilerlocale": "en",
 	"output": "output/%TARGET_NAME%",
-	
+	"delegate-main-to": "TwoCansAlpha4",
 	
 	"image-sheets": [
 		{ "id": "twocans_everything", "prefix": "*" }
 	],
 	
-	"guidseed": "org.Kylljoy.CrayonGames.v1.%TARGET_NAME%",
+	"guidseed": "com.twocansandstring.Kylljoy.efficiencity.beta,%TARGET_NAME%",
 	
 	"vars": [
 		{ "name": "screen_width", "value": 600 },

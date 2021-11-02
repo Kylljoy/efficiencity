@@ -1,0 +1,21 @@
+import Graphics2D;
+
+class LogisticNetworkGraphics {
+
+    static function highlightRoute(route) {
+        for(path_ : route) {
+            Graphics2D.Draw.line(path_.start.x + 20, path_.start.y + 20, path_.end.x + 20, path_.end.y + 20, 2, 0, 255, 0);
+        }
+    }
+    
+
+    static function drawNetwork(network) {
+        for(node_ : network.nodes) {
+            Graphics2D.Draw.ellipse(node_.x - 4 + 20, node_.y - 4 + 20, 8, 8, 255, 0, 0);
+        }
+        for(path_ : network.paths) {
+            Graphics2D.Draw.line(path_.start.x + 20, path_.start.y + 20, path_.end.x + 20, path_.end.y + 20, 2, 0, 0, 255);
+        }
+    }
+    
+}

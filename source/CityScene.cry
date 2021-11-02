@@ -1,13 +1,25 @@
+import TwoCansAlpha4;
+import Graphics2D;
 
+class CityScene : AbstractScene {
 
-class CityScene {
+    field city = new City();
+    field routeTest;
+
+    constructor() : base() {
+        this.routeTest = this.city.logisticNetworks[0].nodes[99].generatePathTo(this.city.logisticNetworks[0].nodes[0]);
+    }
 
     function update(inputManager, events){
 
     }
 
     function render(){
-
+        Graphics2D.Draw.fill(0, 0, 0);
+        for(network_ : this.city.logisticNetworks) {
+            LogisticNetworkGraphics.drawNetwork(network_);
+        }
+        LogisticNetworkGraphics.highlightRoute(this.routeTest);
     }
 
 

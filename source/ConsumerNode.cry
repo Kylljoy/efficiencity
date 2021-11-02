@@ -1,42 +1,65 @@
-
-
+import Math;
 /*
 A node that consumes resources from the network:
 - Always coupled with a factory or consumer
 - Origin of request for the system
 */
-
-
 class ConsumerNode : LogisticNode{
     field resourceId;
     field availableStock;
 
     field network; //The LogisticNetwork this node belongs to
 
+    field chainedNode = null; //Exists iff there is a node directly feeding this one
+
+    field consumer; //The unit that utilizes resources delivered to this node
+
     field requestThreshold = 1; //The threshold at which the node will request more resources
 
-    constructor(x, y, resourceId, requestThreshold, network,  previousNodes = []) : base(x, y, previousNodes){
+    field capacity = 1;
+
+    constructor(x, y, resourceId, requestThreshold, network, consumer, chainedNode = null, previousNodes = []) : base(x, y, previousNodes){
         this.resourceId = resourceId;
         this.availableStock = 0;
         this.network = network;
         this.requestThreshold = requestThreshold;
+
+        this.chainedNode = null;
+    }
+
+    function setCapacity(cap) {
+        this.capacity = cap;
+    }
+
+    function getCapacity() {
+        return this.capacity;
     }
 
     function setRequestThreshold(threshold) {
         this.requestThreshold = threshold;
         if(this.availableStock < threshold) {
             //Make a logistic request, now that we are below a safe threshold
-            this.network.addRequest(this, this.resourceId, this.requestThreshold);
-        }
-        
+            if(this.chainedNode == null) {
+                this.network.addRequest(this, this.resourceId, this.requestThreshold); //File a request with the network
+            } else {
+                this.chainedNode.requestProduction(); //File a request with the chained node
+            }
+        } 
     }
 
     function getResourceId(){
         return this.resourceId;
     }
 
-    function addStock(stock) {
-        this.availableStock += stock;
+    function deliverStock(stock) {
+       this.availableStock = Math.min(this.availableStock + stock, this.capacity);
+       if(this.availableStock >= this.requestThreshold) {
+           this.consumer.nodeReady(this); //Notify the consuming factory that this node is full for production
+       }
+    }
+
+    function hasCapacityFor(stock) {
+        return this.capacity >= this.availableStock + stock;
     }
 
     function takeStock(stock) {
@@ -44,7 +67,11 @@ class ConsumerNode : LogisticNode{
             this.availableStock -= stock;
             if(this.availableStock < this.requestThreshold) {
                 //Make a logistic request, now that we are below a safe threshold
-                this.network.addRequest(this, this.resourceId, this.requestThreshold);
+                if(this.chainedNode == null) {
+                    this.network.addRequest(this, this.resourceId, this.requestThreshold); //File a request with the network
+                } else {
+                    this.chainedNode.requestProduction(); //File a request with the chained node
+                }
             }
             return true; //Taking stock was successful
         }

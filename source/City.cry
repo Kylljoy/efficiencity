@@ -1,0 +1,23 @@
+
+class City {
+    field logisticNetworks = [];
+
+    constructor() {
+        nodes = [];
+        for(x = 0; x < 300; x += 30) {
+            for(y = 0; y < 300; y += 30){
+                nodes.add(new LogisticNode(x,y));
+            }
+        }
+        this.logisticNetworks.add(new LogisticNetwork(nodes[0]));
+
+        for(i = 1; i < 100; i++) {
+            this.logisticNetworks[0].joinNodes(nodes[i], nodes[i - 1]);
+            if(i > 11) {
+                this.logisticNetworks[0].joinNodes(nodes[i], nodes[i - 10]);
+            }
+        }
+    }
+
+    
+}

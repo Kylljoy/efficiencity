@@ -1,0 +1,16 @@
+
+class ChainedFeederNode : FeederNode {
+
+    field consumer;
+
+    constructor(x, y, resourceId, source, network, consumer) : base(x, y, resourceId, source, network) {
+        this.consumer = consumer;
+    }
+
+    function addStock(stock) {
+        if(this.consumer.hasCapacityFor(stock)) {
+            this.consumer.deliverStock();
+        }
+    }
+
+}

@@ -9,11 +9,10 @@ class LogisticRequest {
     field resourceId;
     field amount;
 
-    constructor(origin, resourceId, amount) {
+    constructor(origin, resourceId, amount, parent = null) {
         this.origin = origin;
         this.resourceId = resourceId;
         this.amount = amount;
-
     }
     
 }

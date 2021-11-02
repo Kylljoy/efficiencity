@@ -1,6 +1,6 @@
 import Math;
 
-const MAX_PATHFINDING_ITERATION = 10; //Maximum depth into the logistic network that A* will search
+const MAX_PATHFINDING_ITERATION = 10000; //Maximum depth into the logistic network that A* will search
 
 /*
 An abstract node that exists on the logistic network
@@ -53,8 +53,11 @@ class LogisticNode {
         if(!this.previousNodes.contains(node)) {
             //Add the node, and generate a pathway between them
             this.previousNodes.add(node);
-            this.previousPaths.add(new LogisticPath(node, this));
+            path = new LogisticPath(node, this);
+            this.previousPaths.add(path);
+            return path;
         }
+        return null;
     }
 
     function removePreviousNode(node) {
@@ -74,7 +77,9 @@ class LogisticNode {
     function addNextNode(node) {
         if(!this.nextNodes.contains(node)) {
             this.nextNodes.add(node);
-            this.nextPaths.add(new LogisticPath(this, node));
+            path = new LogisticPath(this, node);
+            this.nextPaths.add(path);
+            return path;
         }
     }
 
@@ -195,6 +200,9 @@ class LogisticNode {
 
         //Generate a frontier based on the next paths
         frontier = this.nextPaths.map((q)=>([q]));
+        if(frontier.length == 0) {
+            return;
+        }
 
         //Sort paths by distance from path endpoint to target node
         frontier.sort((path_)=>((((nodeX - path_[0].end.getX())**2) + ((nodeY - path_[0].end.getY())**2))**0.5));
@@ -202,6 +210,7 @@ class LogisticNode {
         path = [];
 
         for(iteration = 0; iteration < MAX_PATHFINDING_ITERATION; iteration++) { //While we are under the max iteration
+            //print(frontier);
             currentPath = frontier[0]; //Find the best path in the frontier [index 0 b/c we sorted it]
             frontier.remove(0); //Remove this path so we don't duplicate it.
 
@@ -237,7 +246,7 @@ class LogisticNode {
                 frontier.insert(mid, newPath);
             }
         }
-        return null;
+        print("Exceeded max iteration count");
     }
     
 
