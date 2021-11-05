@@ -44,7 +44,7 @@ class LogisticNetwork {
     }
 
     function mergeNetworks(network, nodeA, nodeB) {
-        
+        //TODO : ALL THIS JAZZ!
     }
 
     //Place a new request in the queue
@@ -101,6 +101,12 @@ class LogisticNetwork {
             if (this.requests[i].origin == node) {
                 this.requests.remove(i);
             }
+        }
+    }
+
+    function tick() {
+        for (node_ : this.nodes) {
+            node_.tick();
         }
     }
 

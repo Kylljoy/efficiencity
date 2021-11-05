@@ -1,0 +1,75 @@
+
+/*
+* An abstract kind of transportation unit for moving
+* resources from one node to another
+*/
+class TransportUnit {
+    field type = 0; //Arbitrary numerical identifier to dictate what kind of paths this unit may take
+    field size = 0; //"Size of the unit"
+    
+    field currentPath; //The current path this unit is on
+
+    field route; //List of paths this unit will take, in chronological order
+    field destination; //The node this unit will attempt to take
+
+    field cargo = ""; //Dictates the resourceId of the cargo this unit carries
+    field stock = 0; //How much cargo this unit carries
+
+    field distance = 0; //Distance from the beginning of the path to the end
+    field speed = 0; //Speed, in distance units, this unit can move
+
+    //Attempt to move the transport unit forward
+    function tick() {
+        if (this.distance >= this.currentPath.length - this.speed) {
+           //At the end of the path
+           if (this.currentPath.merging != this) {
+               //This unit needs to enter the junction
+               this.currentPath.merging = this;
+           }
+        }
+        if (this.currentPath.getUnitAheadOf(this) == null || this.currentPath.getUnitAheadOf(this).distance - this.speed >= this.distance) {
+                //No cars ahead of us, good to go
+                this.distance += this.speed;
+        }
+    }
+
+    function draw() {
+
+    }
+    //Attempt to merge this unit onto the given path
+    //True if successful, false otherwise
+    function mergeOnto(path) {
+        if (path != this.route[0]) {
+            //This isn't even where we're trying to go!
+            return false;
+        }
+        if (!path.isEmpty() && path.getLastUnit().distance <= this.size) {
+            //Unsafe to join the path, not enough space for this unit
+            return false;
+        }
+        this.currentPath = path;
+        path.addUnit(this);
+        return true;
+    }
+
+    function setRoute(route) {
+        if(this.currentPath != null) {
+            this.currentPath.purgeUnit(this);
+        }
+        this.destination = route[0].end;
+        this.route = route;
+        this.currentPath = route[0];
+        this.currentPath.addUnit(this);
+        this.distance = 0;
+    }
+
+    //Called when the transport unit successfully leaves the current path
+    function markCurrentPathComplete() {
+        this.distance = 0;
+        if (this.currentPath != null) {
+            this.route = this.route[1:];
+            this.currentPath.purgeUnit(this);
+            this.currentPath = null;
+        }
+    }
+}

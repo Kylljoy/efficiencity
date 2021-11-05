@@ -1,0 +1,52 @@
+
+/*
+*Abstract junction class that represents the joining of two nodes
+*
+*/
+class Junction {
+    field paths = []; //List of paths that exit
+    field units = [];
+
+    function accept(unit, entryPath) {
+        //Returns true if it accepted the unit trying to enter the junction
+        //False if not
+        this.units.add(unit);
+        unit.markCurrentPathComplete();
+        return true;
+    }
+    
+    function tick() {
+        //Updates the junction as neccessary, and attempts to merge units out of the Junction
+        for (unit : this.units) {
+            if (unit.mergeOnto(unit.route[0])) {
+                this.mergeOutUnit(unit);
+            }
+        } 
+    }
+
+    function mergeOutUnit(unit) {
+        for(i = 0; i < this.units.length; i++) {
+            if(this.units[i] == unit) { 
+                this.units.remove(i);
+                return;
+            }
+        }
+    }
+
+    function addPath(path) {
+        this.paths.add(path);
+    }
+
+    function purgePath(path) {
+        for(i = 0; i < this.paths.length; i++) {
+            if(this.paths[i] == path) { 
+                this.paths.remove(i);
+                return;
+            }
+        }
+    }
+
+    
+
+
+}

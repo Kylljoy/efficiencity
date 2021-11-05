@@ -126,6 +126,18 @@ class LogisticNode {
         return this.nextPaths;
     }
 
+    //Abstract function that just takes units in once they reach the end of their path
+    //Returns true if accepted, false if otherwise
+    function deliverUnit(unit) {
+        return true;
+    }
+
+    function tick() {
+        for (path : this.nextPaths) {
+            path.tick();
+        }
+    }
+
 
     function getX() {
         return this.x;
@@ -134,8 +146,6 @@ class LogisticNode {
     function getY() {
         return this.y;
     }
-
-
 
     //A* path generation
     //Generates the node-to-node pathway taken
@@ -247,6 +257,7 @@ class LogisticNode {
             }
         }
         print("Exceeded max iteration count");
+        return null;
     }
     
 

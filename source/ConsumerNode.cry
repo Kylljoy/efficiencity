@@ -87,4 +87,13 @@ class ConsumerNode : LogisticNode{
         this.network.purgeRequestsFromNode(this);
     }
 
+    function deliverUnit(unit) {
+        if(unit.cargo == this.resourceId) {
+            this.deliverStock(unit.stock);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -5,13 +5,20 @@ class CityScene : AbstractScene {
 
     field city = new City();
     field routeTest;
+    field tickTimer = 0;
 
     constructor() : base() {
         this.routeTest = this.city.logisticNetworks[0].nodes[99].generatePathTo(this.city.logisticNetworks[0].nodes[0]);
+        randomUnit = new TransportUnit();
+        randomUnit.speed = 3;
+        randomUnit.setRoute(this.routeTest);
     }
 
     function update(inputManager, events){
-
+        if (this.tickTimer++ > 10) {
+            this.tickTimer = 0;
+            this.city.tick();
+        }
     }
 
     function render(){

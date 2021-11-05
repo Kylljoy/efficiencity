@@ -1,0 +1,26 @@
+/*
+A logistic node that only exists to be a junction for the network
+*/
+class JunctionNode : LogisticNode {
+    field junction;
+
+    constructor(x, y, junction = null, previousNodes = []) : base(x, y, previousNodes) {
+        if (junction != null) {
+            this.junction = junction;
+        } else {
+            this.junction = new Junction();
+        }
+        this.junction.paths = this.nextPaths;
+    }
+
+    function deliverUnit(unit) {
+        return this.junction.accept(unit, unit.currentPath);
+    }
+
+    function tick(){
+        for (path : this.nextPaths) {
+            path.tick();
+        }
+        this.junction.tick();
+    }
+}

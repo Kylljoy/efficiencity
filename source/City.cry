@@ -6,7 +6,7 @@ class City {
         nodes = [];
         for(x = 0; x < 300; x += 30) {
             for(y = 0; y < 300; y += 30){
-                nodes.add(new LogisticNode(x,y));
+                nodes.add(new JunctionNode(x,y));
             }
         }
         this.logisticNetworks.add(new LogisticNetwork(nodes[0]));
@@ -19,5 +19,9 @@ class City {
         }
     }
 
-    
+    function tick() {
+        for (network_ : this.logisticNetworks) {
+            network_.tick();
+        }
+    }
 }
