@@ -14,6 +14,9 @@ class JunctionNode : LogisticNode {
     }
 
     function deliverUnit(unit) {
+        if (unit.destination == this) {
+            return true;
+        }
         return this.junction.accept(unit, unit.currentPath);
     }
 

@@ -17,6 +17,24 @@ class City {
                 this.logisticNetworks[0].joinNodes(nodes[i], nodes[i - 10]);
             }
         }
+        f = new Facility();
+        feederNode = new FeederNode(330, 330, "shit", f, this.logisticNetworks[0]);
+        this.logisticNetworks[0].joinNodes(feederNode,nodes[-1]);
+        feederNode.availableStock = 100;
+        feederNode.capacity = 100;
+        randomUnit = new TransportUnit();
+        randomUnit.speed = 3;
+        randomUnit.capacity = 100;
+        feederNode.deliverUnit(randomUnit);
+        //x, y, resourceId, requestThreshold, network, consumer, chainedNode = null, previousNodes = []
+        fact = new Factory();
+        consumerNode = new ConsumerNode(-10, -10, "shit", 10, this.logisticNetworks[0], fact);
+        consumerNode.availableStock = 11;
+        consumerNode.capacity = 15;
+        this.logisticNetworks[0].joinNodes(nodes[0], consumerNode);
+        consumerNode.takeStock(3);
+        print(consumerNode.availableStock);
+
     }
 
     function tick() {

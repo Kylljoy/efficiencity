@@ -23,6 +23,7 @@ class ConsumerNode : LogisticNode{
         this.availableStock = 0;
         this.network = network;
         this.requestThreshold = requestThreshold;
+        this.consumer = consumer;
 
         this.chainedNode = null;
     }
@@ -40,7 +41,7 @@ class ConsumerNode : LogisticNode{
         if(this.availableStock < threshold) {
             //Make a logistic request, now that we are below a safe threshold
             if(this.chainedNode == null) {
-                this.network.addRequest(this, this.resourceId, this.requestThreshold); //File a request with the network
+                this.network.addRequest(this, this.resourceId, this.requestThreshold - this.availableStock + 1); //File a request with the network
             } else {
                 this.chainedNode.requestProduction(); //File a request with the chained node
             }
@@ -55,6 +56,7 @@ class ConsumerNode : LogisticNode{
        this.availableStock = Math.min(this.availableStock + stock, this.capacity);
        if(this.availableStock >= this.requestThreshold) {
            this.consumer.nodeReady(this); //Notify the consuming factory that this node is full for production
+           this.network.purgeRequestsFromNode(this);
        }
     }
 
@@ -63,12 +65,14 @@ class ConsumerNode : LogisticNode{
     }
 
     function takeStock(stock) {
-        if(stock > this.availableStock) {
+        if(stock < this.availableStock) {
             this.availableStock -= stock;
             if(this.availableStock < this.requestThreshold) {
                 //Make a logistic request, now that we are below a safe threshold
+                
                 if(this.chainedNode == null) {
-                    this.network.addRequest(this, this.resourceId, this.requestThreshold); //File a request with the network
+                    this.network.addRequest(this, this.resourceId, this.requestThreshold - this.availableStock + 1); //File a request with the network
+                    //print("Issued request for "+this.resourceId );
                 } else {
                     this.chainedNode.requestProduction(); //File a request with the chained node
                 }

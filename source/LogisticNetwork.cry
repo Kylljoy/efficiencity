@@ -51,7 +51,7 @@ class LogisticNetwork {
     function addRequest(node, resourceId, amount) {
         //See if the request can be filled with currently available resources
         feederNodes = this.resourceMap[resourceId];
-
+        //print("Fulfilling request for " + amount + " " + resourceId);
         for (node_ : feederNodes) {
             if(node_.hasStock(amount) && node_.canDispatch()) {
                 //There is available stock right now, and the node can dispatch, send it over immediately!
@@ -73,15 +73,14 @@ class LogisticNetwork {
     function notifyNewResources(producerNode, resourceId, amount) {
         amountRemaining = amount;
         //Check if any requests can be filled by this product
-        if (resourceId == null) {
+        if (this.requests[resourceId] == null) {
             //There are no existing requests for this product
             return;
         }
         for (request_ : this.requests[resourceId]) {
             if(request_.amount <= amountRemaining && producerNode.canDispatch()) {
                 //There is now stock to deliver to this node, deliver it!
-                producerNode.dispatchTo(request_.node, request_.amount);
-                amountRemaining--;
+                request_.amount -= producerNode.dispatchTo(request_.node, request_.amount); 
             }
         }
     }
@@ -90,6 +89,7 @@ class LogisticNetwork {
     function resolveRequest(request) {
         for (i = 0; i < this.requests.length; i++) {
             if (this.requests[i] == request) {
+                //print("Request for "+request.amount+" "+request.resourceId + "resolved");
                 this.requests.remove(i);
             }
         }
@@ -99,6 +99,7 @@ class LogisticNetwork {
     function purgeRequestsFromNode(node) {
         for (i = 0; i < this.requests.length; i++) {
             if (this.requests[i].origin == node) {
+                //print("Request for "+this.requests[i].amount+" "+this.requests[i].resourceId + "resolved");
                 this.requests.remove(i);
             }
         }
@@ -107,6 +108,14 @@ class LogisticNetwork {
     function tick() {
         for (node_ : this.nodes) {
             node_.tick();
+        }
+    }
+
+    function addFeederNode(node) {
+        if (!this.resourceMap.contains(node.resourceId)) {
+            this.resourceMap[node.resourceId] = [node];
+        } else {
+            this.resourceMap[node.resourceId].add(node);
         }
     }
 

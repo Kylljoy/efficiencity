@@ -1,0 +1,19 @@
+/*
+A generic "Facility" class 
+A facility produces products and lead into a feederNode
+*/
+class Facility {
+    field outputNode; //The node this facility outputs to
+
+    field productionTime = 1; //The amount of ticks required to produce a unit of resource
+    field currentProductionStage = 0; //The variable that represents how many ticks have passed since production
+    field resourceId; //The id of the resource produced
+
+    function tick() {
+
+    }
+
+    function requestProduction() {
+        
+    }
+}

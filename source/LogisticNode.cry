@@ -238,6 +238,7 @@ class LogisticNode {
                 //Binary insertion sort
                 low = 0;
                 high = frontier.length;
+                mid = (low + high) / 2;
                 while (low < high){
                     mid = (low + high) / 2;
                     

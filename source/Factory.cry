@@ -1,0 +1,11 @@
+/*
+An intermediate "Factory" class 
+A factory counsumes products from a consumerNode products and lead into a feederNode
+*/
+class Factory : Facility {
+
+
+    function nodeReady(node) {
+
+    }
+}

@@ -8,14 +8,12 @@ class CityScene : AbstractScene {
     field tickTimer = 0;
 
     constructor() : base() {
-        this.routeTest = this.city.logisticNetworks[0].nodes[99].generatePathTo(this.city.logisticNetworks[0].nodes[0]);
-        randomUnit = new TransportUnit();
-        randomUnit.speed = 3;
-        randomUnit.setRoute(this.routeTest);
+       // this.routeTest = this.city.logisticNetworks[0].nodes[100].generatePathTo(this.city.logisticNetworks[0].nodes[101]);
+        
     }
 
     function update(inputManager, events){
-        if (this.tickTimer++ > 10) {
+        if (this.tickTimer++ > 3) {
             this.tickTimer = 0;
             this.city.tick();
         }
@@ -26,7 +24,7 @@ class CityScene : AbstractScene {
         for(network_ : this.city.logisticNetworks) {
             LogisticNetworkGraphics.drawNetwork(network_);
         }
-        LogisticNetworkGraphics.highlightRoute(this.routeTest);
+       // LogisticNetworkGraphics.highlightRoute(this.routeTest);
     }
 
 

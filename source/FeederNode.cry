@@ -13,6 +13,9 @@ class FeederNode : LogisticNode{
 
     field capacity = 1; //Total storage capacity for this node;
 
+    field deliveryUnits = [];
+    field unitsAwaitingDispatch = [];
+
     field source; //The factory or producer that feeds this node
     
     field network; //The LogisticNetwork this node belongs to
@@ -25,6 +28,7 @@ class FeederNode : LogisticNode{
         this.source = source;
         
         this.network = network;
+        this.network.addFeederNode(this);
     }
 
     function setCapacity(cap) {
@@ -63,13 +67,54 @@ class FeederNode : LogisticNode{
         this.source.requestProduction();
     }
 
-    //TODO : Write code for delivery units and dispatching, returning, updating
-    function canDispatch() {
-        //TODO : Write code for determining if units are available for dispatch
+    function deliverUnit(unit) {
+        this.deliveryUnits.add(unit);
+        unit.home = this;
     }
 
+    function removeFromDispatch(unit) {
+        for(i = 0; i < this.unitsAwaitingDispatch.length; i++) {
+            if(this.unitsAwaitingDispatch[i] == unit) {
+                this.unitsAwaitingDispatch.remove(i);
+                return;
+            }
+        }
+    }
+
+    function removeFromAvailable(unit) {
+        for(i = 0; i < this.deliveryUnits.length; i++) {
+            if(this.deliveryUnits[i] == unit) {
+                this.deliveryUnits.remove(i);
+                return;
+            }
+        }
+    }
+
+    
+    function canDispatch() {
+        return this.deliveryUnits.length > 0;
+    }
+
+    //Dispatches as many units as possible, filling as close to the amount as neccessary
     function dispatchTo(node, amount) {
-        //TODO : Write code for dispatching units to a consumer
+        amountFilled = amount;
+        route = this.generatePathTo(node);
+        if(route == null) {
+            return 0;
+        }
+        while (amountFilled > 0 && this.availableStock > 0 && this.deliveryUnits.length > 0) {
+            //Send a delivery unit to the node, carrying as much loot as possible
+            amountSent = Math.min(Math.min(amountFilled, this.availableStock), this.deliveryUnits[0].capacity);
+            amountFilled -= amountSent;
+            dispatchedUnit = this.deliveryUnits[0];
+            dispatchedUnit.cargo = this.resourceId;
+            dispatchedUnit.stock = amountSent;
+            this.availableStock -= amountSent;
+            this.removeFromAvailable(dispatchedUnit);
+            dispatchedUnit.setRoute(route);
+        }
+
+        return amount - amountFilled;
     }
 
 }
