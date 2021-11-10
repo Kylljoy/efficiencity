@@ -10,6 +10,9 @@ class LogisticPath {
     field start;
     field end;
 
+    field xVec = 0.0;
+    field yVec = 0.0;
+
     field length;
 
     field units = []; //List of transport units, in order of merge
@@ -18,7 +21,13 @@ class LogisticPath {
     constructor(start, end) {
         this.start = start;
         this.end = end;
-        this.length = (((start.x - end.x) ** 2) + ((start.y - end.y) ** 2)) ** 0.5;
+        this.xVec = end.x - start.x;
+        this.yVec = end.y - start.y;      
+        this.length = ((this.xVec ** 2.0) + (this.yVec ** 2.0)) ** 0.5;
+        if (this.length != 0.0) {
+            this.xVec /= this.length;
+            this.yVec /= this.length;
+        }
     }
 
     function setStartNode(node) {

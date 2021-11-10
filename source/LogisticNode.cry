@@ -1,6 +1,6 @@
 import Math;
 
-const MAX_PATHFINDING_ITERATION = 10000; //Maximum depth into the logistic network that A* will search
+const MAX_PATHFINDING_ITERATION = 1000; //Maximum depth into the logistic network that A* will search
 
 /*
 An abstract node that exists on the logistic network
@@ -165,7 +165,6 @@ class LogisticNode {
         for(iteration = 0; iteration < MAX_PATHFINDING_ITERATION; iteration++) { //While we are under the max iteration
             currentPath = frontier[0]; //Find the best path in the frontier [index 0 b/c we sorted it]
             frontier.remove(0); //Remove this path so we don't duplicate it.
-
             //If the path results in the desired node...
             if(currentPath[0] == node) {
                 return currentPath[::-1]; //Return the path, we're done here
@@ -197,6 +196,7 @@ class LogisticNode {
                 }
                 frontier.insert(mid, newPath);
             }
+            
         }
         return null;
     }
@@ -207,20 +207,24 @@ class LogisticNode {
         //Get the x and y values of the node
         nodeX = node.getX();
         nodeY = node.getY();
+        
+        //Create a list of nodes that have been visited
+        visitedNodes = [this];
 
         //Generate a frontier based on the next paths
         frontier = this.nextPaths.map((q)=>([q]));
         if(frontier.length == 0) {
-            return;
+            return null;
         }
 
         //Sort paths by distance from path endpoint to target node
-        frontier.sort((path_)=>((((nodeX - path_[0].end.getX())**2) + ((nodeY - path_[0].end.getY())**2))**0.5));
-
+        frontier.sort((path_)=>((((nodeX - path_[0].end.x) ** 2) + ((nodeY - path_[0].end.y) ** 2)) ** 0.5));
+        //print(frontier.map((path__) => (((nodeX - path__[0].end.x) ** 2) + ((nodeY - path__[0].end.y) ** 2)) ** 0.5));
         path = [];
 
         for(iteration = 0; iteration < MAX_PATHFINDING_ITERATION; iteration++) { //While we are under the max iteration
             //print(frontier);
+            //print("FINDING");
             currentPath = frontier[0]; //Find the best path in the frontier [index 0 b/c we sorted it]
             frontier.remove(0); //Remove this path so we don't duplicate it.
 
@@ -233,31 +237,39 @@ class LogisticNode {
             newPaths = currentPath[0].end.getNextPaths()
                 .map((newPath_)=>
                 ([newPath_] + currentPath));
+            //Remove any paths that contain duplicate nodes that have already been visited
+            newPaths = newPaths.filter((path__) => (!visitedNodes.contains(path__[0].end)));
+            //Add all new nodes to the visited list
+            visitedNodes += newPaths.map((path___) => (path___[0].end));
             for(newPath : newPaths) {
-                distance = (((nodeX - newPath[0].end.getX())**2) + ((nodeY - newPath[0].end.getY())**2))**0.5;
+                distance = (((nodeX - newPath[0].end.x) ** 2) + ((nodeY - newPath[0].end.y) ** 2)) ** 0.5;
                 //Binary insertion sort
                 low = 0;
                 high = frontier.length;
                 mid = (low + high) / 2;
+
                 while (low < high){
                     mid = (low + high) / 2;
                     
                     testNode_ = frontier[mid][0].end;
-                    testDistance_ = (((nodeX - testNode_.getX())**2) + ((nodeY - testNode_.getY())**2))**0.5;
+                    testDistance_ = (((nodeX - testNode_.x) ** 2) + ((nodeY - testNode_.y) ** 2)) ** 0.5;
                     
                     if(distance > testDistance_) {
                         low = mid + 1;
                     } else if(distance < testDistance_) {
                         high = mid;
                     } else if (distance == testDistance_){
-                        frontier.insert(mid, newPath);
                         break;
                     }
                 }
+                mid = (low + high) / 2;
                 frontier.insert(mid, newPath);
             }
+            //print(frontier.map((path__) => (((nodeX - path__[0].end.x) ** 2) + ((nodeY - path__[0].end.y) ** 2)) ** 0.5));
+
         }
         print("Exceeded max iteration count");
+        //print(frontier.map((path__) => (((nodeX - path__[0].end.x) ** 2) + ((nodeY - path__[0].end.y) ** 2)) ** 0.5));
         return null;
     }
     

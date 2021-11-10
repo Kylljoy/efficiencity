@@ -13,12 +13,15 @@ class City {
 
         for(i = 1; i < 100; i++) {
             this.logisticNetworks[0].joinNodes(nodes[i], nodes[i - 1]);
+            this.logisticNetworks[0].joinNodes(nodes[i - 1], nodes[i]);
             if(i > 11) {
                 this.logisticNetworks[0].joinNodes(nodes[i], nodes[i - 10]);
+                this.logisticNetworks[0].joinNodes(nodes[i - 10], nodes[i]);
             }
         }
         f = new Facility();
         feederNode = new FeederNode(330, 330, "shit", f, this.logisticNetworks[0]);
+        //this.logisticNetworks[0].nodes[99].generatePathTo(this.logisticNetworks[0].nodes[0]);
         this.logisticNetworks[0].joinNodes(feederNode,nodes[-1]);
         feederNode.availableStock = 100;
         feederNode.capacity = 100;
@@ -33,7 +36,7 @@ class City {
         consumerNode.capacity = 15;
         this.logisticNetworks[0].joinNodes(nodes[0], consumerNode);
         consumerNode.takeStock(3);
-        print(consumerNode.availableStock);
+        //print(consumerNode.availableStock);
 
     }
 
