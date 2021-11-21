@@ -11,6 +11,7 @@ class LogisticNetwork {
     field nodes = []; //A list of all managed nodes
     field paths = []; //A list of all managed paths
     field resourceMap = {}; //Maps resource types to respective feeding nodes
+    field buildings = [];
 
     field requests = {};
 
@@ -46,6 +47,10 @@ class LogisticNetwork {
     function mergeNetworks(network, nodeA, nodeB) {
         //TODO : ALL THIS JAZZ!
     }
+    
+    function addBuilding(building) {
+        this.buildings.add(building);
+    }
 
     //Place a new request in the queue
     function addRequest(node, resourceId, amount) {
@@ -57,11 +62,14 @@ class LogisticNetwork {
                 //There is available stock right now, and the node can dispatch, send it over immediately!
                 node_.dispatchTo(node, amount);
                 return;
+            } else if (node_.canDispatch()) {
+                //Request production in the meantime
+                node_.placeRequest();
             }
         }
 
         //If not, add it to the queue
-        if (this.requests[resourceId] == null){
+        if (!this.requests.keys().contains(resourceId)) {
             this.requests[resourceId] = [new LogisticRequest(node, resourceId, amount)];
             return;
         }
@@ -73,14 +81,14 @@ class LogisticNetwork {
     function notifyNewResources(producerNode, resourceId, amount) {
         amountRemaining = amount;
         //Check if any requests can be filled by this product
-        if (this.requests[resourceId] == null) {
+        if (!this.requests.keys().contains(resourceId)) {
             //There are no existing requests for this product
             return;
         }
         for (request_ : this.requests[resourceId]) {
             if(request_.amount <= amountRemaining && producerNode.canDispatch()) {
                 //There is now stock to deliver to this node, deliver it!
-                request_.amount -= producerNode.dispatchTo(request_.node, request_.amount); 
+                amountRemaining -= producerNode.dispatchTo(request_.node, request_.amount); 
             }
         }
     }
@@ -108,6 +116,10 @@ class LogisticNetwork {
     function tick() {
         for (node_ : this.nodes) {
             node_.tick();
+        }
+
+        for (building_ : this.buildings) {
+            building_.tick();
         }
     }
 

@@ -20,10 +20,13 @@ class City {
             }
         }
         f = new Facility();
+        f.productionTime = 5;
+        f.yield = 10;
         feederNode = new FeederNode(330, 330, "shit", f, this.logisticNetworks[0]);
+        f.outputNode = feederNode;
         //this.logisticNetworks[0].nodes[99].generatePathTo(this.logisticNetworks[0].nodes[0]);
         this.logisticNetworks[0].joinNodes(feederNode,nodes[-1]);
-        feederNode.availableStock = 100;
+        feederNode.availableStock = 0;
         feederNode.capacity = 100;
         randomUnit = new TransportUnit();
         randomUnit.speed = 3;
@@ -32,11 +35,12 @@ class City {
         //x, y, resourceId, requestThreshold, network, consumer, chainedNode = null, previousNodes = []
         fact = new Factory();
         consumerNode = new ConsumerNode(0, 0, "shit", 10, this.logisticNetworks[0], fact);
+        this.logisticNetworks[0].addBuilding(f);
         consumerNode.availableStock = 11;
         consumerNode.capacity = 15;
         this.logisticNetworks[0].joinNodes(nodes[0], consumerNode);
         consumerNode.takeStock(3);
-        //print(consumerNode.availableStock);
+        
 
     }
 

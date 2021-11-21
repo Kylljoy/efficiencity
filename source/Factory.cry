@@ -4,14 +4,33 @@ A factory counsumes products from a consumerNode products and lead into a feeder
 */
 class Factory : Facility {
 
-    field inputNodes = [];
+    /*field productionTime = 1; //The amount of ticks required to produce a unit of resource
+    field currentProductionStage = 0; //The variable that represents how many ticks have passed since production
+    field resourceId; //The id of the resource produced
+    */
 
-    function Factory () {
+    field feederNode;
+    field recipe = {}; //Individual keys corresponding to 
+
+    constructor() : base() {
         
     }
 
-
-    function nodeReady(node) {
-
+    function tick() {
+        if (this.currentProductionStage == 0) {
+            //TODO : Rewrite this for multiple possible resources
+            if (this.constantProduction) {
+                if (this.feederNode.hasStock(10)) {
+                    this.feederNode.takeStock(10);
+                    this.currentProductionStage++;
+                }
+            }
+        } else {
+            this.currentProductionStage++;
+        }
+        if (this.currentProductionStage >= this.productionTime) {
+            this.currentProductionStage = 0;
+            this.outputNode.addStock(this.yield);
+        }
     }
 }

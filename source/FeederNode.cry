@@ -45,6 +45,7 @@ class FeederNode : LogisticNode{
 
     function addStock(stock) {
         this.availableStock = Math.min(this.availableStock + stock, this.capacity);
+        this.network.notifyNewResources(this, this.resourceId, this.availableStock);
     }
 
     function hasCapacityFor(stock) {
@@ -98,6 +99,7 @@ class FeederNode : LogisticNode{
     //Dispatches as many units as possible, filling as close to the amount as neccessary
     function dispatchTo(node, amount) {
         amountFilled = amount;
+        route = null;
         route = this.generatePathTo(node);
         if(route == null) {
             return 0;

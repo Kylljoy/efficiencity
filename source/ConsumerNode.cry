@@ -4,11 +4,15 @@ A node that consumes resources from the network:
 - Always coupled with a factory or consumer
 - Origin of request for the system
 */
+
+//TODO : Rewrite this class for accepting multiple resource types
 class ConsumerNode : LogisticNode{
     field resourceId;
     field availableStock;
 
     field network; //The LogisticNetwork this node belongs to
+
+    field activeRequests = false;
 
     field chainedNode = null; //Exists iff there is a node directly feeding this one
 
@@ -74,7 +78,7 @@ class ConsumerNode : LogisticNode{
                     this.network.addRequest(this, this.resourceId, this.requestThreshold - this.availableStock + 1); //File a request with the network
                     //print("Issued request for "+this.resourceId );
                 } else {
-                    this.chainedNode.requestProduction(); //File a request with the chained node
+                    this.chainedNode.placeRequest(); //File a request with the chained node
                 }
             }
             return true; //Taking stock was successful
