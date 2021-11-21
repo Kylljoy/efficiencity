@@ -4,6 +4,12 @@ A factory counsumes products from a consumerNode products and lead into a feeder
 */
 class Factory : Facility {
 
+    field inputNodes = [];
+
+    function Factory () {
+        
+    }
+
 
     function nodeReady(node) {
 

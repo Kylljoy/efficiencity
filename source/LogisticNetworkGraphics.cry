@@ -15,8 +15,10 @@ class LogisticNetworkGraphics {
         }
         for(path_ : network.paths) {
             Graphics2D.Draw.line(path_.start.x + 20 - (5 * path_.yVec), path_.start.y + 20 + (5 * path_.xVec), path_.end.x + 20 - (5 * path_.yVec), path_.end.y + 20 + (5 * path_.xVec), 2, 0, 0, 255);
-            for (unit_ : path_.getUnits()) {
-                Graphics2D.Draw.rectangle(path_.start.x + ((path_.end.x - path_.start.x) * ((unit_.distance + 0.0)/ path_.length)) + 15, path_.start.y + ((path_.end.y - path_.start.y) * ((unit_.distance + 0.0)/ path_.length)) + 15, 10, 10, 255, 255, 255);
+            if(path_.length > 0) {
+                for (unit_ : path_.getUnits()) {
+                    Graphics2D.Draw.rectangle(path_.start.x + ((path_.end.x - path_.start.x) * ((unit_.distance + 0.0)/ path_.length)) + 15, path_.start.y + ((path_.end.y - path_.start.y) * ((unit_.distance + 0.0)/ path_.length)) + 15, 10, 10, 255, 255, 255);
+                }
             }
         }
     }

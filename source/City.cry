@@ -31,7 +31,7 @@ class City {
         feederNode.deliverUnit(randomUnit);
         //x, y, resourceId, requestThreshold, network, consumer, chainedNode = null, previousNodes = []
         fact = new Factory();
-        consumerNode = new ConsumerNode(-10, -10, "shit", 10, this.logisticNetworks[0], fact);
+        consumerNode = new ConsumerNode(0, 0, "shit", 10, this.logisticNetworks[0], fact);
         consumerNode.availableStock = 11;
         consumerNode.capacity = 15;
         this.logisticNetworks[0].joinNodes(nodes[0], consumerNode);

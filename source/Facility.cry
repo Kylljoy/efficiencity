@@ -9,6 +9,10 @@ class Facility {
     field currentProductionStage = 0; //The variable that represents how many ticks have passed since production
     field resourceId; //The id of the resource produced
 
+    constructor() {
+        
+    }
+
     function tick() {
 
     }
