@@ -26,20 +26,31 @@ class City {
         f.outputNode = feederNode;
         //this.logisticNetworks[0].nodes[99].generatePathTo(this.logisticNetworks[0].nodes[0]);
         this.logisticNetworks[0].joinNodes(feederNode,nodes[-1]);
+        this.logisticNetworks[0].joinNodes(nodes[-1], feederNode);
         feederNode.availableStock = 0;
         feederNode.capacity = 100;
-        randomUnit = new TransportUnit();
-        randomUnit.speed = 3;
-        randomUnit.capacity = 100;
-        feederNode.deliverUnit(randomUnit);
+        feederNode.deliverUnit(new Truck());
+        feederNode.deliverUnit(new Truck());
         //x, y, resourceId, requestThreshold, network, consumer, chainedNode = null, previousNodes = []
         fact = new Factory();
-        consumerNode = new ConsumerNode(0, 0, "shit", 10, this.logisticNetworks[0], fact);
+        fact.yield = 30;
+        fact.resourceId = "rock";
+        consumerNode = new ConsumerNode(350, 350, "shit", 100, this.logisticNetworks[0], fact);
+        outputNode = new FeederNode(360, 360, "rock", fact, this.logisticNetworks[0]);
+        outputNode.deliverUnit(new Truck());
+        outputNode.capacity = 30;
+        fact.addInputNode(consumerNode);
+        fact.setRecipe({"shit":10});
+        fact.outputNode = outputNode;
         this.logisticNetworks[0].addBuilding(f);
-        consumerNode.availableStock = 11;
-        consumerNode.capacity = 15;
-        this.logisticNetworks[0].joinNodes(nodes[0], consumerNode);
-        consumerNode.takeStock(3);
+        this.logisticNetworks[0].addBuilding(fact);
+        requester = new ConsumerNode (370, 90, "rock", 10, this.logisticNetworks[0], null);
+        this.logisticNetworks[0].joinNodes(nodes[90], requester);
+        this.logisticNetworks[0].joinNodes(outputNode, nodes[95]);
+        this.logisticNetworks[0].joinNodes(consumerNode, nodes[97]);
+        this.logisticNetworks[0].joinNodes(nodes[97], consumerNode);
+        requester.poll();
+        
         
 
     }

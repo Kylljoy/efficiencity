@@ -68,9 +68,22 @@ class FeederNode : LogisticNode{
         this.source.requestProduction();
     }
 
+    function hasUnit(unit) {
+        for (unit_ : this.deliveryUnits) {
+            if (unit_ == unit) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function deliverUnit(unit) {
-        this.deliveryUnits.add(unit);
-        unit.home = this;
+        //print("UNIT RECIEVED");
+        if (!this.hasUnit(unit)) {
+            this.deliveryUnits.add(unit);
+            unit.home = this;
+        }
+        return true;
     }
 
     function removeFromDispatch(unit) {
@@ -114,6 +127,9 @@ class FeederNode : LogisticNode{
             this.availableStock -= amountSent;
             this.removeFromAvailable(dispatchedUnit);
             dispatchedUnit.setRoute(route);
+            if (LOG_DISPATCHES) {
+                print("Dispatched unit with " + amountSent + " " + this.resourceId);
+            } 
         }
 
         return amount - amountFilled;

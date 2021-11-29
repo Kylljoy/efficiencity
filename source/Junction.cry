@@ -10,6 +10,7 @@ class Junction {
     function accept(unit, entryPath) {
         //Returns true if it accepted the unit trying to enter the junction
         //False if not
+        //print("Junction Accepted");
         this.units.add(unit);
         unit.markCurrentPathComplete();
         return true;

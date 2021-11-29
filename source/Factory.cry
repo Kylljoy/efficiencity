@@ -9,20 +9,28 @@ class Factory : Facility {
     field resourceId; //The id of the resource produced
     */
 
-    field feederNode;
+    field feederNodes = [];
     field recipe = {}; //Individual keys corresponding to 
+    field productionRequests = 0;
 
     constructor() : base() {
-        
+        this.constantProduction = false;
+        this.productionTime = 3;
+    }
+
+    function linkTo() {
+
     }
 
     function tick() {
         if (this.currentProductionStage == 0) {
-            //TODO : Rewrite this for multiple possible resources
-            if (this.constantProduction) {
-                if (this.feederNode.hasStock(10)) {
-                    this.feederNode.takeStock(10);
-                    this.currentProductionStage++;
+            if (this.constantProduction || this.productionRequests > 0) {
+                if (this.canProduce()) {
+                    print("Production Started: " + this.yield + " " + this.resourceId);
+                    this.consumeInputs();
+                    this.currentProductionStage = 1;
+                } else {
+                    this.poll();
                 }
             }
         } else {
@@ -30,7 +38,66 @@ class Factory : Facility {
         }
         if (this.currentProductionStage >= this.productionTime) {
             this.currentProductionStage = 0;
+            this.productionRequests--;
             this.outputNode.addStock(this.yield);
         }
+    }
+
+    function canProduce() {
+        for (id : this.recipe.keys()) {
+            canFulfill = false;
+            for (node : this.feederNodes) {
+                if (node.getResourceId() == id && node.hasStock(this.recipe[id])) {
+                    canFulfill = true;
+                }
+            }
+            if (!canFulfill) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function consumeInputs() {
+        for (id : this.recipe.keys()) {
+            for (node : this.feederNodes) {
+                if (node.getResourceId() == id && node.hasStock(this.recipe[id])) {
+                   node.takeStock(this.recipe[id]);
+                   break; 
+                }
+            }
+        }
+    }
+
+    function poll() {
+        if (!this.canProduce()) {
+            for (node_ : this.feederNodes) {
+                node_.poll();
+            }
+        }
+    }
+
+    function nodeReady(node) {
+    }
+
+    function setRecipe(recipe) {
+        this.recipe = recipe;
+        for (id : this.recipe.keys()) {
+            for (node : this.feederNodes) {
+                if (node.getResourceId() == id) {
+                    node.setRequestThreshold(recipe[id]);
+                }
+            }
+        }
+    }
+
+    function addInputNode(node) {
+        this.feederNodes.add(node);
+    }
+
+    function requestProduction() {
+        //print("Requested!");
+        print("Production Request: " + this.yield + " " + this.resourceId);
+        this.productionRequests++;
     }
 }

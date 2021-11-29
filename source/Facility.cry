@@ -5,12 +5,15 @@ A facility produces products and lead into a feederNode
 class Facility {
     field outputNode; //The node this facility outputs to
 
+    field x; //Graphical location of the facility, mostly irrelivant
+    field y; //Ditto
+
     field productionTime = 1; //The amount of ticks required to produce a unit of resource
     field currentProductionStage = 0; //The variable that represents how many ticks have passed since production
     field resourceId; //The id of the resource produced
     field yield; //The amount of resource yielded from one production cycle
     
-    field constantProduction = false; //Whether or not this facility will continuously attempt to produce
+    field constantProduction = true; //Whether or not this facility will continuously attempt to produce
 
     constructor() {
         
@@ -20,6 +23,7 @@ class Facility {
         if (this.currentProductionStage == 0) {
             if (this.constantProduction) {
                 this.currentProductionStage++;
+                //print("Production Order: " + this.yield + " " + this.resourceId);
             }
         } else {
             this.currentProductionStage++;
@@ -34,6 +38,7 @@ class Facility {
     function requestProduction() {
         //print("Requested!");
         if (this.currentProductionStage == 0) {
+            //print("Production Order: " + this.yield + " " + this.resourceId);
             this.currentProductionStage = 1;
         }
     }

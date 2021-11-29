@@ -7,6 +7,11 @@ LogisticNetwork abstract class
 - Outsources to LogisticNetworkRenderer for rendering
 
 */
+
+const LOG_REQUESTS = true;
+const LOG_DISPATCHES = true;
+const LOG_PRODUCTIONS = true;
+
 class LogisticNetwork {
     field nodes = []; //A list of all managed nodes
     field paths = []; //A list of all managed paths
@@ -71,9 +76,22 @@ class LogisticNetwork {
         //If not, add it to the queue
         if (!this.requests.keys().contains(resourceId)) {
             this.requests[resourceId] = [new LogisticRequest(node, resourceId, amount)];
+            if (LOG_REQUESTS) {
+                print("New request from " + node + " for " + amount + " " + resourceId);
+            }
             return;
         }
+        //Check for duplicate requests from this node
+        for (request_ : this.requests[resourceId]) {
+            if (request_.origin == node) {
+                //Duplicate request, ignore this
+                return;
+            }
+        }
         this.requests[resourceId].add(new LogisticRequest(node, resourceId, amount));
+        if (LOG_REQUESTS) {
+            print("New request from " + node + " for " + amount + " " + resourceId);
+        }
     }
 
     //Notify the network that a node has new available resources for delivery,
@@ -81,14 +99,17 @@ class LogisticNetwork {
     function notifyNewResources(producerNode, resourceId, amount) {
         amountRemaining = amount;
         //Check if any requests can be filled by this product
-        if (!this.requests.keys().contains(resourceId)) {
+        if (!(this.requests.keys().contains(resourceId) && this.requests[resourceId].length > 0)) {
             //There are no existing requests for this product
+            //print("No requests for " + resourceId + " at the moment!");
             return;
         }
         for (request_ : this.requests[resourceId]) {
             if(request_.amount <= amountRemaining && producerNode.canDispatch()) {
                 //There is now stock to deliver to this node, deliver it!
-                amountRemaining -= producerNode.dispatchTo(request_.node, request_.amount); 
+                amountRemaining -= producerNode.dispatchTo(request_.origin, request_.amount); 
+            } else if (producerNode.canDispatch()) {
+                request_.amount = request_.amount - producerNode.dispatchTo(request_.origin, request_.amount);
             }
         }
     }
@@ -97,7 +118,9 @@ class LogisticNetwork {
     function resolveRequest(request) {
         for (i = 0; i < this.requests.length; i++) {
             if (this.requests[i] == request) {
-                //print("Request for "+request.amount+" "+request.resourceId + "resolved");
+                if (LOG_REQUESTS) {
+                    print("Request for "+request.amount+" "+request.resourceId + "resolved");
+                }
                 this.requests.remove(i);
             }
         }
@@ -105,10 +128,14 @@ class LogisticNetwork {
 
     //Purge any requests to the system made by a node
     function purgeRequestsFromNode(node) {
-        for (i = 0; i < this.requests.length; i++) {
-            if (this.requests[i].origin == node) {
-                //print("Request for "+this.requests[i].amount+" "+this.requests[i].resourceId + "resolved");
-                this.requests.remove(i);
+        for (key : this.requests.keys()) {
+            for(i = 0; i < this.requests[key].length; i++) {
+                if (this.requests[key][i].origin == node) {
+                    if (LOG_REQUESTS) {
+                        print("Request for " + this.requests[key][i].resourceId + " resolved");
+                    }
+                    this.requests[key].remove(i);
+                }
             }
         }
     }

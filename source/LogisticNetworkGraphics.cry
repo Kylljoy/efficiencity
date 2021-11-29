@@ -2,23 +2,67 @@ import Graphics2D;
 
 class LogisticNetworkGraphics {
 
+    static field hlRoutes = [];
+
+
+    static field X_OFFSET = -20;
+    static field Y_OFFSET = -20;
+    static field SCALE = 1.0;
+
+    static field NODE_SIZE = 14;
+    
+    static field PATH_WIDTH = 2;
+    static field PATH_OFFSET = 4;
+
+    static field UNIT_WIDTH = 4;
+
+
+    static field NODE_SIZE_SCALED = LogisticNetworkGraphics.NODE_SIZE * LogisticNetworkGraphics.SCALE;
+    
+    static field PATH_WIDTH_SCALED = LogisticNetworkGraphics.PATH_WIDTH * LogisticNetworkGraphics.SCALE;
+    static field PATH_OFFSET_SCALED = LogisticNetworkGraphics.PATH_OFFSET * LogisticNetworkGraphics.SCALE;
+
+    static function addHLRoute(route, time){
+        LogisticNetworkGraphics.hlRoutes.add([route, time]);
+    }
+
     static function highlightRoute(route) {
         for(path_ : route) {
-            Graphics2D.Draw.line(path_.start.x + 20, path_.start.y + 20, path_.end.x + 20, path_.end.y + 20, 2, 0, 255, 0);
+             Graphics2D.Draw.line((path_.start.x - LogisticNetworkGraphics.X_OFFSET - (LogisticNetworkGraphics.PATH_OFFSET * path_.yVec)) * LogisticNetworkGraphics.SCALE,
+                (path_.start.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * path_.xVec)) * LogisticNetworkGraphics.SCALE,
+                (path_.end.x - LogisticNetworkGraphics.X_OFFSET  - (LogisticNetworkGraphics.PATH_OFFSET * path_.yVec)) * LogisticNetworkGraphics.SCALE, 
+                (path_.end.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * path_.xVec)) * LogisticNetworkGraphics.SCALE,
+                LogisticNetworkGraphics.PATH_WIDTH_SCALED, 150, 150, 0);
+
+        }
+    }
+
+    static function highlightNetwork(network) {
+        for(node_ : network.nodes) {
+            node_.hl();
+        }
+        for(path_ : network.paths) {
+            path_.hl();
         }
     }
     
 
     static function drawNetwork(network) {
+        Graphics2D.Draw.fill(30, 120, 30);
         for(node_ : network.nodes) {
-            Graphics2D.Draw.ellipse(node_.x - 4 + 20, node_.y - 4 + 20, 8, 8, 255, 0, 0);
+            node_.draw();
         }
         for(path_ : network.paths) {
-            Graphics2D.Draw.line(path_.start.x + 20 - (5 * path_.yVec), path_.start.y + 20 + (5 * path_.xVec), path_.end.x + 20 - (5 * path_.yVec), path_.end.y + 20 + (5 * path_.xVec), 2, 0, 0, 255);
-            if(path_.length > 0) {
-                for (unit_ : path_.getUnits()) {
-                    Graphics2D.Draw.rectangle(path_.start.x + ((path_.end.x - path_.start.x) * ((unit_.distance + 0.0)/ path_.length)) + 15, path_.start.y + ((path_.end.y - path_.start.y) * ((unit_.distance + 0.0)/ path_.length)) + 15, 10, 10, 255, 255, 255);
-                }
+            path_.draw();
+        }
+    }
+    
+    static function draw() {
+        for (i = 0; i < LogisticNetworkGraphics.hlRoutes.length; i++) {
+            LogisticNetworkGraphics.hlRoutes[i][1]--;
+            LogisticNetworkGraphics.highlightRoute(LogisticNetworkGraphics.hlRoutes[i][0]);
+            if (LogisticNetworkGraphics.hlRoutes[i][1] <= 0) {
+                LogisticNetworkGraphics.hlRoutes.remove(i);
             }
         }
     }

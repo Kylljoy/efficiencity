@@ -1,4 +1,5 @@
 import Math;
+import Graphics2D;
 /*
 An abstract class that represents the physical path from one node to another
 Every connection between LogisticNodes is represented as a path
@@ -39,6 +40,7 @@ class LogisticPath {
     }
 
     function addUnit(unit) {
+        //print("Added unit");
         this.units.add(unit);
     }
 
@@ -57,6 +59,7 @@ class LogisticPath {
     }
 
     function purgeUnit(unit) {
+        //print("Purged Unit");
         for(i = 0; i < this.units.length; i++) {
             if(this.units[i] == unit) { 
                 this.units.remove(i);
@@ -85,6 +88,7 @@ class LogisticPath {
     function tick() {
         //Attempt to merge units into the junction
         if (this.merging != null) {
+            //print("Merging!");
             if (this.end.deliverUnit(this.merging)) {
                 this.merging = null;
             }
@@ -95,9 +99,9 @@ class LogisticPath {
     }
 
     function getUnitAheadOf(unit) {
-        for(i = 0; i < this.units.length - 1; i++) {
+        for(i = 1; i < this.units.length - 1; i++) {
             if(this.units[i] == unit) { 
-                return this.units[i+1];
+                return this.units[i - 1];
             }
         }
         return null;
@@ -106,9 +110,34 @@ class LogisticPath {
     function getNumberOfUnitsAheadOf(unit) {
         for(i = 0; i < this.units.length; i++) {
             if(this.units[i] == unit) { 
-                return i + 1;
+                return i;
             }
         }
         return this.units.length;
+    }
+
+    function draw() {
+        start = this.start;
+        end = this.end;
+
+        Graphics2D.Draw.line((start.x - LogisticNetworkGraphics.X_OFFSET - (LogisticNetworkGraphics.PATH_OFFSET * this.yVec)) * LogisticNetworkGraphics.SCALE,
+        (start.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * this.xVec)) * LogisticNetworkGraphics.SCALE,
+        (end.x - LogisticNetworkGraphics.X_OFFSET  - (LogisticNetworkGraphics.PATH_OFFSET * this.yVec)) * LogisticNetworkGraphics.SCALE, 
+        (end.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * this.xVec)) * LogisticNetworkGraphics.SCALE, LogisticNetworkGraphics.PATH_WIDTH_SCALED, 0, 0, 0);
+
+        for (unit_ : this.units) {
+            unit_.draw((start.x - LogisticNetworkGraphics.X_OFFSET - (LogisticNetworkGraphics.PATH_OFFSET * this.yVec)),
+            (start.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * this.xVec)));
+        }
+    }
+
+    function hl() {
+        start = this.start;
+        end = this.end;
+
+        Graphics2D.Draw.line((start.x - LogisticNetworkGraphics.X_OFFSET - (LogisticNetworkGraphics.PATH_OFFSET * this.yVec)) * LogisticNetworkGraphics.SCALE,
+        (start.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * this.xVec)) * LogisticNetworkGraphics.SCALE,
+        (end.x - LogisticNetworkGraphics.X_OFFSET  - (LogisticNetworkGraphics.PATH_OFFSET * this.yVec)) * LogisticNetworkGraphics.SCALE, 
+        (end.y - LogisticNetworkGraphics.Y_OFFSET + (LogisticNetworkGraphics.PATH_OFFSET * this.xVec)) * LogisticNetworkGraphics.SCALE, LogisticNetworkGraphics.PATH_WIDTH_SCALED, 150, 150, 0);
     }
 }

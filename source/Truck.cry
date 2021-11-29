@@ -1,0 +1,14 @@
+/**
+* The simplest unit in the game, just a basic truck
+*
+*/
+
+class Truck : TransportUnit {
+
+    constructor () : base() {
+        this.speed = 2;
+        this.capacity = 20;
+        this.size = 10;
+    }
+    
+}

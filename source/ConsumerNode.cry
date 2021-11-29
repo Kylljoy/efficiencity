@@ -40,8 +40,23 @@ class ConsumerNode : LogisticNode{
         return this.capacity;
     }
 
+    function poll() {
+        if(this.availableStock < this.requestThreshold) {
+            //Make a logistic request, now that we are below a safe threshold
+            if(this.chainedNode == null) {
+                this.network.addRequest(this, this.resourceId, this.requestThreshold - this.availableStock + 1); //File a request with the network
+                return false;
+            } else {
+                this.chainedNode.requestProduction(); //File a request with the chained node
+                return false;
+            }
+        }
+        return true;
+    }
+
     function setRequestThreshold(threshold) {
         this.requestThreshold = threshold;
+        this.capacity = Math.max(this.capacity, threshold);
         if(this.availableStock < threshold) {
             //Make a logistic request, now that we are below a safe threshold
             if(this.chainedNode == null) {
@@ -98,6 +113,8 @@ class ConsumerNode : LogisticNode{
     function deliverUnit(unit) {
         if(unit.cargo == this.resourceId) {
             this.deliverStock(unit.stock);
+            //print("Delivered " + unit.stock);
+            
             return true;
         } else {
             return false;

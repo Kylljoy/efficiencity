@@ -1,8 +1,11 @@
+import Graphics2D;
 
 /*
 * An abstract kind of transportation unit for moving
 * resources from one node to another
 */
+import Core.Reflection;
+
 class TransportUnit {
     field type = 0; //Arbitrary numerical identifier to dictate what kind of paths this unit may take
     field size = 0; //"Size of the unit"
@@ -14,7 +17,7 @@ class TransportUnit {
 
     field cargo = ""; //Dictates the resourceId of the cargo this unit carries
     field stock = 0; //How much cargo this unit currently carries
-    field capacity = 10; //The maximum cargo this unit can carry
+    field capacity = 1; //The maximum cargo this unit can carry
 
     field distance = 0; //Distance from the beginning of the path to the end
     field speed = 0; //Speed, in distance units, this unit can move
@@ -23,13 +26,22 @@ class TransportUnit {
 
     //Attempt to move the transport unit forward
     function tick() {
+        //print("Unit is ticking!");
+        if (this.currentPath == null) {
+            return;
+        }
         if (this.distance >= this.currentPath.length - this.speed) {
+
            //At the end of the path
            //Check if this is the node we're headed to
             if(this.currentPath.end == this.destination) {
                 //We are here!
                 if(this.destination.deliverUnit(this)) {
                     this.markCurrentPathComplete();
+                    if (this.destination is ConsumerNode) {
+                        this.returnHomeFrom(this.destination);
+                    }
+                    //print(this.distance >= this.currentPath.length - this.speed);
                 }
                 return;
             } 
@@ -46,7 +58,9 @@ class TransportUnit {
         }
     }
 
-    function draw() {
+    function draw(xOffset, yOffset) {
+        Graphics2D.Draw.rectangle((xOffset + (this.distance * this.currentPath.xVec)) * LogisticNetworkGraphics.SCALE,
+            (yOffset + (this.distance * this.currentPath.yVec)) * LogisticNetworkGraphics.SCALE, 4, 4, 150, 150, 150);
 
     }
     //Attempt to merge this unit onto the given path
@@ -69,11 +83,20 @@ class TransportUnit {
         if(this.currentPath != null) {
             this.currentPath.purgeUnit(this);
         }
-        this.destination = route[-1].end;
+        //LogisticNetworkGraphics.addHLRoute(route, 60);
         this.route = route;
         this.currentPath = route[0];
-        this.currentPath.addUnit(this);
         this.distance = 0;
+        this.destination = route[-1].end;
+        this.currentPath.addUnit(this);
+    }
+
+    function returnHomeFrom(node) {
+        route = node.generatePathTo(this.home);
+        if (route != null) {
+            this.stock = 0;
+            this.setRoute(route);
+        }
     }
 
     //Called when the transport unit successfully leaves the current path
