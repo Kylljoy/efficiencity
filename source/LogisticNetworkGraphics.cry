@@ -3,6 +3,7 @@ import Graphics2D;
 class LogisticNetworkGraphics {
 
     static field hlRoutes = [];
+    static field hlNodes = [];
 
 
     static field X_OFFSET = -20;

@@ -11,7 +11,9 @@ LogisticNetwork abstract class
 const LOG_REQUESTS = true;
 const LOG_DISPATCHES = true;
 const LOG_PRODUCTIONS = true;
-
+/*
+TODO : Convert EVERY FUNCTION IN THIS TREE to work recursively
+*/
 class LogisticNetwork {
     field nodes = []; //A list of all managed nodes
     field paths = []; //A list of all managed paths
